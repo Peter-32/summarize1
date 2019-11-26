@@ -1,7 +1,13 @@
 summarize1
 ==============================
 
-Summarize by extracting sentences.
+My first project on extractive summarization.
+
+Steps:
+1) Get each sentence's average word embedding (weight by TF-IDF where each sentence is treated as a document)
+2) Make a similarity matrix
+3) Pass the similarity matrix into networkx's pagerank algorithm which takes a networkx graph (use from_numpy_array to get a networkx graph)
+Skimmed this article for the steps involved in this extractive summarization: https://www.analyticsvidhya.com/blog/2018/11/introduction-text-summarization-textrank-python/
 
 Project Organization
 ------------
