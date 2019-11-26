@@ -55,9 +55,6 @@ import spacy
 from sklearn.metrics.pairwise import cosine_similarity
 import networkx as nx
 
-def save_obj(obj, name ):
-    with open('obj/'+ name + '.pkl', 'wb') as f:
-        pickle.dump(obj, f, pickle.HIGHEST_PROTOCOL)
 
 def load_obj(name ):
     with open('obj/' + name + '.pkl', 'rb') as f:
@@ -68,10 +65,6 @@ seed(32)
 
 # Initialize
 print("Initialize")
-wnl = nltk.WordNetLemmatizer()
-the_stopwords = stopwords.words('english')
-tfidf = TfidfVectorizer()
-nlp = spacy.load('en_core_web_md')
 
 # Extract
 print("Extract")
@@ -80,67 +73,20 @@ with open("../../data/raw/guide.txt") as file:
 
 # Transform
 print("Transform")
-guide = guide.lower()
-tokens = word_tokenize(guide)
-text = nltk.Text(tokens)
-words = [re.sub(r'[^A-Za-z_\s]', '', w) for w in text]
-words = [wnl.lemmatize(w) for w in words if w.strip() != ''] # Will take work later to get the original text back without lemmatize.
 sents = nltk.sent_tokenize(guide)
 
-# Get dictionaries
-print("Dictionaries")
-tfidf.fit(words)
-tfidf_weights_dict = dict(zip(tfidf.get_feature_names(), tfidf.idf_))
-embeddings_dict = {}
-for val in tfidf_weights_dict:
-    embeddings_dict[val] = nlp(val).vector
 
-# Averaged Vectors
-print("Embeddings")
-sent_vectors = []
-for sent in sents:
-    tokens = word_tokenize(sent)
-    text = nltk.Text(tokens)
-    words = [re.sub(r'[^A-Za-z_\s]', '', w) for w in text]
-    words = [wnl.lemmatize(w) for w in words if w.strip() != '']
-    vector_sum, denominator = [0]*300, 0
-    for word in words:
-        try:
-            vector_sum += embeddings_dict[word]*tfidf_weights_dict[word]
-            denominator += tfidf_weights_dict[word]
-        except:
-            pass
-    if denominator != 0:
-        sent_vectors.append(vector_sum/denominator)
-    else:
-        sent_vectors.append(vector_sum)
+scores = load_obj("scores")
 
-# Similarity Matrix
-print("Similarity matrix")
-sim_mat = np.zeros([len(sents), len(sents)])
-for i in range(len(sents)):
-    for j in range(len(sents)):
-        if i != j:
-            sim_mat[i][j] = cosine_similarity(sent_vectors[i].reshape(1,300), sent_vectors[j].reshape(1,300))[0,0]
-print(sim_mat)
+scores = [(x,y) for (x,y) in scores.items()]
+scores = sorted(scores, key= lambda x: float(x[1]), reverse=True)
+scores = [x for (x,y) in scores]
+output = "\n\n".join([sents[score] for score in scores])[0:1000]
 
-# Graph
-print("GraphX")
-nx_graph = nx.from_numpy_array(sim_mat)
-scores = nx.pagerank(nx_graph)
-print(scores)
+# Write
+f = open("../../data/output/output.txt", "w")
+f.write(output)
+f.close()
 
-save_obj(scores, "scores")
-
-
-print(len(sent_vectors))
-print(sent_vectors[-3:])
-print(scores)
-# words = [wnl.lemmatize(w) for w in words]
-# words = [w for w in words if w not in the_stopwords and w != '']
-
-
-
-
-
-print(guide[-400:])
+# for i in sorted (scores.values()) :
+#      print(i, end = " ")
