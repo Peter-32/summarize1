@@ -8,53 +8,41 @@ warnings.filterwarnings("ignore")
 
 # Public modules
 import re
-import pandas as pd
-from pandas import read_csv
-from numpy.random import seed
-from sklearn.model_selection import train_test_split
-import re
-import pandas as pd
-from pandas import read_csv
-from numpy.random import seed
-from sklearn.model_selection import train_test_split
-import numpy as np
-from os import path
-from pandas import read_csv
-import matplotlib.pyplot as plt
-from sklearn import preprocessing
-from sklearn.pipeline import Pipeline
-from sklearn.linear_model import LogisticRegression
-from sklearn.model_selection import cross_val_score, learning_curve
-from sklearn.metrics import precision_recall_curve, confusion_matrix, \
-                            precision_score, recall_score, accuracy_score
-from sklearn.model_selection import cross_val_predict
-from numpy.random import seed
-import lightgbm as lgb
-import re
 import os
+import nltk
+import spacy
 import pickle
 import numpy as np
 import pandas as pd
-from sklearn.svm import SVC
-from sklearn.random_projection import GaussianRandomProjection
+from os import path
+import networkx as nx
+import lightgbm as lgb
 from pandas import read_csv
+from sklearn.svm import SVC
 from numpy.random import seed
+import matplotlib.pyplot as plt
+from sklearn import preprocessing
+from nltk.corpus import stopwords
+from sklearn.pipeline import Pipeline
+from nltk.corpus import wordnet as wn
+from nltk.tokenize import word_tokenize
 from sklearn.impute import SimpleImputer
 from sklearn.decomposition import TruncatedSVD
-from sklearn.pipeline import Pipeline, FeatureUnion
-from sklearn.base import BaseEstimator, TransformerMixin
-from sklearn.preprocessing import StandardScaler, MinMaxScaler, \
                                   OneHotEncoder
-from sklearn.feature_extraction.text import TfidfVectorizer
-from nltk.corpus import wordnet as wn
-import nltk
-from nltk.corpus import stopwords
-import re
-from nltk.tokenize import word_tokenize
-import spacy
+from sklearn.linear_model import LogisticRegression
+from sklearn.pipeline import Pipeline, FeatureUnion
+from sklearn.model_selection import train_test_split
+from sklearn.model_selection import cross_val_predict
 from sklearn.metrics.pairwise import cosine_similarity
-import networkx as nx
+from sklearn.base import BaseEstimator, TransformerMixin
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.random_projection import GaussianRandomProjection
+from sklearn.preprocessing import StandardScaler, MinMaxScaler, \
+from sklearn.model_selection import cross_val_score, learning_curve
+from sklearn.metrics import precision_recall_curve, confusion_matrix, \
+                            precision_score, recall_score, accuracy_score
 
+# Functions
 def save_obj(obj, name ):
     with open('obj/'+ name + '.pkl', 'wb') as f:
         pickle.dump(obj, f, pickle.HIGHEST_PROTOCOL)
@@ -63,24 +51,23 @@ def load_obj(name ):
     with open('obj/' + name + '.pkl', 'rb') as f:
         return pickle.load(f)
 
-# Set seed - ensures that the datasets are split the same way if re-run
+# Set seed
 seed(32)
 
-# Initialize
-print("Initialize")
+# Initialize Helper Objects
+print("Initialize Helper Objects")
 wnl = nltk.WordNetLemmatizer()
-the_stopwords = stopwords.words('english')
 tfidf = TfidfVectorizer()
 nlp = spacy.load('en_core_web_md')
 
 # Extract
 print("Extract")
 with open("../../data/raw/bitcoin.txt") as file:
-    guide = file.read()
+    doc = file.read()
 
 # Transform
 print("Transform")
-guide = guide.lower()
+doc = doc.lower()
 tokens = word_tokenize(guide)
 text = nltk.Text(tokens)
 words = [re.sub(r'[^A-Za-z_\s]', '', w) for w in text]

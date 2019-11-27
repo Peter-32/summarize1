@@ -5,6 +5,12 @@ Summarize1
 
 Summarize any text.
 
+#### Results
+
+I used it to summarize a bitcoin article, and it worked very well.
+
+I used it to summarize a Dark Souls 3 walkthrough, and it performed poorly because the guide probably can't be summarized well with extractive summarization.
+
 #### Using It
 
 Copy any text, run a command, and the summarization of the text appears in your clipboard.
@@ -18,7 +24,7 @@ This program works by extracting the most important sentences.
 3. Convert the matrix into a graph
 4. Apply the page rank algorithm on the graph
 
-#### Credit
+#### Resources
 
 I used some ideas and code from:
 
