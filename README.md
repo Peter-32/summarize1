@@ -1,15 +1,31 @@
-summarize1
-==============================
+Summarize1
+==========
 
-My first project on extractive summarization.
+#### Purpose
 
-Steps:
-1) Get each sentence's average word embedding (weight by TF-IDF where each sentence is treated as a document)
-2) Make a similarity matrix
-3) Pass the similarity matrix into networkx's pagerank algorithm which takes a networkx graph (use from_numpy_array to get a networkx graph)
-Skimmed this article for the steps involved in this extractive summarization: https://www.analyticsvidhya.com/blog/2018/11/introduction-text-summarization-textrank-python/
+Summarize any text.
 
-Project Organization
+#### Using It
+
+Copy any text, run a command, and the summarization of the text appears in your clipboard.
+
+#### How it Works
+
+This program works by extracting the most important sentences.
+
+1. Get the average word embedding weighted by TF-IDF of each sentence
+2. Get the cosine similarity matrix
+3. Convert the matrix into a graph
+4. Apply the page rank algorithm on the graph
+
+#### Credit
+
+I used some ideas and code from:
+
+https://www.analyticsvidhya.com/blog/2018/11/introduction-text-summarization-textrank-python/
+
+
+#### Project Organization
 ------------
 
     ├── LICENSE

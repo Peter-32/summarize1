@@ -75,7 +75,7 @@ nlp = spacy.load('en_core_web_md')
 
 # Extract
 print("Extract")
-with open("../../data/raw/guide.txt") as file:
+with open("../../data/raw/bitcoin.txt") as file:
     guide = file.read()
 
 # Transform

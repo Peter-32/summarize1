@@ -68,7 +68,7 @@ print("Initialize")
 
 # Extract
 print("Extract")
-with open("../../data/raw/guide.txt") as file:
+with open("../../data/raw/bitcoin.txt") as file:
     guide = file.read()
 
 # Transform
@@ -81,10 +81,10 @@ scores = load_obj("scores")
 scores = [(x,y) for (x,y) in scores.items()]
 scores = sorted(scores, key= lambda x: float(x[1]), reverse=True)
 scores = [x for (x,y) in scores]
-output = "\n\n".join([sents[score] for score in scores])[0:1000]
+output = "\n\n".join([sents[score] for score in scores])[0:10000]
 
 # Write
-f = open("../../data/output/output.txt", "w")
+f = open("../../data/output/output2.txt", "w")
 f.write(output)
 f.close()
 
