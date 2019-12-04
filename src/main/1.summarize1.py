@@ -56,8 +56,7 @@ print("Progress: 40%")
 sent_vectors = []
 for sent in processed_sents:
     tokens = word_tokenize(sent)
-    text = nltk.Text(tokens)
-    words = [re.sub(r'[^A-Za-z_\s]', '', w) for w in text]
+    words = [re.sub(r'[^A-Za-z_\s]', '', w) for w in tokens]
     words = [wnl.lemmatize(w) for w in words if w.strip() != '']
     vector_sum, denominator = [0]*96, 0
     for word in words:
