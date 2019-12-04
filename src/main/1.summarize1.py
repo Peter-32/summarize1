@@ -55,11 +55,8 @@ for word in vocabulary:
 print("Progress: 40%")
 sent_vectors = []
 for sent in processed_sents:
-    tokens = word_tokenize(sent)
-    words = [re.sub(r'[^A-Za-z_\s]', '', w) for w in tokens]
-    words = [wnl.lemmatize(w) for w in words if w.strip() != '']
     vector_sum, denominator = [0]*96, 0
-    for word in words:
+    for word in sent.split(" "):
         try:
             vector_sum += embeddings_dict[word]*tfidf_weights_dict[word]
             denominator += tfidf_weights_dict[word]
