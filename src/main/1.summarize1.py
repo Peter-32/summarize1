@@ -12,53 +12,54 @@ import nltk
 import spacy
 from os import path
 import networkx as nx
-from numpy import zeros
+import numpy as np
 import pyperclip as clip
 from numpy.random import seed
 from nltk.corpus import wordnet as wn
 from nltk.tokenize import word_tokenize
-from sklearn.metrics.pairwise import cosine_similarity
+from scipy.spatial.distance import pdist, squareform
 from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.preprocessing import StandardScaler, MinMaxScaler
 
 # Set seed
 seed(32)
 
 # Initialize Helper Objects
-print("Initialize Helper Objects")
+print("Longer text leads to a longer runtime")
+print("Progress: 0%")
 wnl = nltk.WordNetLemmatizer()
 tfidf = TfidfVectorizer()
-nlp = spacy.load('en_core_web_md')
+nlp = spacy.load('en_core_web_sm')
 
-# Extract
-print("Extract")
+# Clean Sentences
 doc = clip.paste()
-
-# Transform
-print("Transform")
 doc = doc.lower()
-tokens = word_tokenize(guide)
-text = nltk.Text(tokens)
-words = [re.sub(r'[^A-Za-z_\s]', '', w) for w in text]
-words = [wnl.lemmatize(w) for w in words if w.strip() != ''] # Will take work later to get the original text back without lemmatize.
-sents = nltk.sent_tokenize(guide)
-
-# Get dictionaries
-print("Dictionaries")
-tfidf.fit(words)
-tfidf_weights_dict = dict(zip(tfidf.get_feature_names(), tfidf.idf_))
-embeddings_dict = {}
-for val in tfidf_weights_dict:
-    embeddings_dict[val] = nlp(val).vector
-
-# Averaged Vectors
-print("Embeddings")
-sent_vectors = []
+sents = nltk.sent_tokenize(doc)
+processed_sents = []
 for sent in sents:
+    words = word_tokenize(sent)
+    words = [re.sub(r'[^A-Za-z_\s]', '', w) for w in words]
+    words = [wnl.lemmatize(w) for w in words if w.strip() != '']
+    processed_sent = " ".join(words)
+    processed_sents.append(processed_sent)
+
+# Create Dictionaries
+print("Progress: 20%")
+tfidf.fit(processed_sents)
+tfidf_weights_dict, embeddings_dict = dict(zip(tfidf.get_feature_names(), tfidf.idf_)), {}
+vocabulary = tfidf_weights_dict.keys()
+for word in vocabulary:
+    embeddings_dict[word] = nlp(word).vector
+
+# Convert Sentences into Numbers
+print("Progress: 40%")
+sent_vectors = []
+for sent in processed_sents:
     tokens = word_tokenize(sent)
     text = nltk.Text(tokens)
     words = [re.sub(r'[^A-Za-z_\s]', '', w) for w in text]
     words = [wnl.lemmatize(w) for w in words if w.strip() != '']
-    vector_sum, denominator = [0]*300, 0
+    vector_sum, denominator = [0]*96, 0
     for word in words:
         try:
             vector_sum += embeddings_dict[word]*tfidf_weights_dict[word]
@@ -70,26 +71,17 @@ for sent in sents:
     else:
         sent_vectors.append(vector_sum)
 
-# Similarity Matrix (copied this from an article)
-print("Similarity matrix")
-sim_mat = zeros([len(sents), len(sents)])
-for i in range(len(sents)):
-    for j in range(len(sents)):
-        if i != j:
-            sim_mat[i][j] = cosine_similarity(sent_vectors[i].reshape(1,300), sent_vectors[j].reshape(1,300))[0,0]
-print(sim_mat)
+# Sentence Similarity
+print("Progress: 60%")
+sent_vectors = np.array(sent_vectors)
+sent_vectors = StandardScaler().fit_transform(sent_vectors)
+sent_vectors = MinMaxScaler().fit_transform(sent_vectors)
+distances = pdist(sent_vectors, metric='euclidean')
+sentence_similarity_matrix = squareform(distances)
 
-# Graph (copied this from an article)
-print("GraphX")
-nx_graph = nx.from_numpy_array(sim_mat)
-scores = nx.pagerank(nx_graph)
-
-# Sort scores
-scores = [(x,y) for (x,y) in scores.items()]
-scores = sorted(scores, key= lambda x: float(x[1]), reverse=True)
-scores = [x for (x,y) in scores]
-output = "\n\n".join([sents[score] for score in scores])[0:500]
-
-# Save results to clipboard
-clip.copy(output)
+# Graph and PageRank
+print("Progress: 80%")
+graph = nx.from_numpy_array(sentence_similarity_matrix)
+scores = nx.pagerank(graph)
+clip.copy("\n\n".join([sents[score] for score in [x for (x,y) in sorted([(x,y) for (x,y) in scores.items()], key= lambda x: float(x[1]), reverse=True)]]))
 print("Done - results are in the clipboard")
