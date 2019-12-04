@@ -3,17 +3,16 @@ Summarize1
 
 #### Purpose
 
-Summarize any text.
+Highlighting in support tickets
 
 #### Results
 
-I used it to summarize a bitcoin article, and it worked very well.
-
-I used it to summarize a Dark Souls 3 walkthrough, and it performed poorly because the guide probably can't be summarized well with extractive summarization.
+This program automatically sets the most important sentences in all tickets to red and bold.
 
 #### Using It
 
-Copy any text, run a command, and the summarization of the text appears in your clipboard.
+One script can be scheduled to update support tickets.
+The other can be used to summarize news articles.  Just copy any text, run a command, and the summarization of the text appears in your clipboard.
 
 #### How it Works
 
